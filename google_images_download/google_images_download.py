@@ -259,7 +259,7 @@ class googleimagesdownload:
             sys.setdefaultencoding('utf8')
         options = webdriver.ChromeOptions()
         options.add_argument('--no-sandbox')
-        options.add_argument("--headless")
+        # options.add_argument("--headless")
 
         if browser == 'Firefox':
             browser = webdriver.Firefox()
@@ -271,7 +271,7 @@ class googleimagesdownload:
                       "argument to specify the path to the executable.) or google chrome browser is not "
                       "installed on your machine (exception: %s)" % e)
                 sys.exit()
-        browser.set_window_size(1024, 768)
+        browser.set_window_size(1920, 1080)
 
         # Open the link
         browser.get(url)
@@ -321,7 +321,7 @@ class googleimagesdownload:
             time.sleep(0.3)
 
         try:
-            browser.find_element_by_xpath('//input[@value="Show more results"]').click()
+            browser.find_element_by_xpath("//input[@class='mye4qd']").click()
             for i in range(50):
                 element.send_keys(Keys.PAGE_DOWN)
                 time.sleep(0.3)  # bot id protection
@@ -343,6 +343,7 @@ class googleimagesdownload:
         # close the browser
         browser.close()
 
+        print('downloading', len(images), 'images')
         return images, self.get_all_tabs(source)
 
     # Correcting the escape characters for python2
@@ -404,7 +405,7 @@ class googleimagesdownload:
         main = data[3]
         info = data[9]
         if info is None:
-            info = data[11]
+            info = data[25]
         formatted_object = {}
         try:
             formatted_object['image_height'] = main[2]
