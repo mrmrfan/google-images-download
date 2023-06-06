@@ -149,6 +149,9 @@ def user_input():
         parser.add_argument('-cd', '--chromedriver',
                             help='specify the path to chromedriver executable in your local machine', type=str,
                             required=False)
+        parser.add_argument('-hl', '--headless',
+                            help='whether or not use the head in chromedriver', default=True,
+                            action="store_true")        
         parser.add_argument('-wb', '--browser',
                             help='Specify which driver to use', type=str,
                             required=False)
@@ -170,7 +173,7 @@ def user_input():
         parser.add_argument('-is', '--save_source',
                             help="creates a text file containing a list of downloaded images along with source page url",
                             type=str, required=False)
-
+                            
         args = parser.parse_args()
         arguments = vars(args)
         records = []
@@ -251,7 +254,7 @@ class googleimagesdownload:
             sys.exit()
 
     # Download Page for more than 100 images
-    def download_extended_page(self, url, chromedriver, browser):
+    def download_extended_page(self, url, chromedriver, browser, headless):
         from selenium import webdriver
         from selenium.webdriver.common.keys import Keys
         if sys.version_info[0] < 3:
@@ -259,7 +262,8 @@ class googleimagesdownload:
             sys.setdefaultencoding('utf8')
         options = webdriver.ChromeOptions()
         options.add_argument('--no-sandbox')
-        # options.add_argument("--headless")
+        if headless:
+            options.add_argument("--headless")
 
         if browser == 'Firefox':
             browser = webdriver.Firefox()
@@ -1109,7 +1113,7 @@ class googleimagesdownload:
                     if limit < 101:
                         images, tabs = self.download_page(url)  # download page
                     else:
-                        images, tabs = self.download_extended_page(url, arguments['chromedriver'], arguments['browser'])
+                        images, tabs = self.download_extended_page(url, arguments['chromedriver'], arguments['browser'], arguments['headless'])
 
                     if not arguments["silent_mode"]:
                         if arguments['no_download']:
