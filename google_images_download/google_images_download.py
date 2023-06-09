@@ -149,6 +149,9 @@ def user_input():
         parser.add_argument('-cd', '--chromedriver',
                             help='specify the path to chromedriver executable in your local machine', type=str,
                             required=False)
+        parser.add_argument('-c', '--chrome',
+                            help='specify the path to chrome executable in your local machine', type=str,
+                            default='')        
         parser.add_argument('-hl', '--headless',
                             help='whether or not use the head in chromedriver', default=True,
                             action="store_true")        
@@ -254,7 +257,7 @@ class googleimagesdownload:
             sys.exit()
 
     # Download Page for more than 100 images
-    def download_extended_page(self, url, chromedriver, browser, headless):
+    def download_extended_page(self, url, chromedriver, chrome, browser, headless):
         from selenium import webdriver
         from selenium.webdriver.common.keys import Keys
         if sys.version_info[0] < 3:
@@ -264,6 +267,8 @@ class googleimagesdownload:
         options.add_argument('--no-sandbox')
         if headless:
             options.add_argument("--headless")
+        if chrome != '':
+            options.binary_location = chrome
 
         if browser == 'Firefox':
             browser = webdriver.Firefox()
@@ -1113,7 +1118,7 @@ class googleimagesdownload:
                     if limit < 101:
                         images, tabs = self.download_page(url)  # download page
                     else:
-                        images, tabs = self.download_extended_page(url, arguments['chromedriver'], arguments['browser'], arguments['headless'])
+                        images, tabs = self.download_extended_page(url, arguments['chromedriver'], arguments['chrome'], arguments['browser'], arguments['headless'])
 
                     if not arguments["silent_mode"]:
                         if arguments['no_download']:
