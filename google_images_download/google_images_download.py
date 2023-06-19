@@ -170,6 +170,8 @@ def user_input():
                             action="store_true")
         parser.add_argument('-iu', '--ignore_urls', default=False,
                             help="delimited list input of image urls/keywords to ignore", type=str)
+        parser.add_argument('-iu', '--urls', default=False,
+                            help="delimited list input of page urls", type=str)
         parser.add_argument('-sil', '--silent_mode', default=False,
                             help="Remains silent. Does not print notification messages on the terminal",
                             action="store_true")
@@ -740,10 +742,15 @@ class googleimagesdownload:
     # Download Images
     def download_image(self, image_url, image_format, main_directory, dir_name, count, print_urls, socket_timeout,
                        prefix, print_size, no_numbering, no_download, save_source, img_src, silent_mode, thumbnail_only,
-                       format, ignore_urls):
+                       format, ignore_urls, urls):
         if not silent_mode:
             if print_urls or no_download:
                 print("Image URL: " + image_url)
+        if urls:
+            if img_src not in urls:
+                print('img_src',img_src)
+                return "fail", "Image not in whitelist", None, image_url
+            
         if ignore_urls:
             if any(url in image_url for url in ignore_urls.split(',')):
                 return "fail", "Image ignored due to 'ignore url' parameter", None, image_url
@@ -894,6 +901,16 @@ class googleimagesdownload:
         errorCount = 0
         i = 0
         count = 1
+
+        if arguments['urls']:
+            urls = arguments['urls'].split(',')
+            mark = {}
+            for url in urls:
+                mark[url] = 1
+            urls = mark
+        else:
+            urls = None
+
         while count < limit + 1 and i < len(image_objects):
             if len(image_objects) == 0:
                 print("no_links")
@@ -917,7 +934,7 @@ class googleimagesdownload:
                     arguments['print_urls'], arguments['socket_timeout'], arguments['prefix'], arguments['print_size'],
                     arguments['no_numbering'], arguments['no_download'], arguments['save_source'],
                     object['image_source'], arguments["silent_mode"], arguments["thumbnail_only"], arguments['format'],
-                    arguments['ignore_urls'])
+                    arguments['ignore_urls'], urls)
                 if not arguments["silent_mode"]:
                     print(download_message)
                 if download_status == "success":
@@ -1128,6 +1145,7 @@ class googleimagesdownload:
                     items, errorCount, abs_path = self._get_all_items(images, main_directory, dir_name, limit,
                                                                       arguments)  # get all image items and download images
                     paths[pky + search_keyword[i] + sky] = abs_path
+                    
 
                     # dumps into a json file
                     if arguments['extract_metadata']:
